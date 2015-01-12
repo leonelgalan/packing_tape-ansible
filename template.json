@@ -1,0 +1,52 @@
+{
+  "variables": {
+    "digitalocean_api_token": "{{env `DIGITALOCEAN_API_TOKEN`}}",
+    "packer_provisioner_ansible_local_folder": " /tmp/packer-provisioner-ansible-local"
+  },
+  "builders": [
+    {
+      "type": "digitalocean",
+      "api_token": "{{user `digitalocean_api_token`}}",
+      "droplet_name": "packing-tape-temp",
+      "snapshot_name": "packing_tape-{{timestamp}}",
+      "image": "ubuntu-14-04-x64",
+      "size": "2gb"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get install -y software-properties-common",
+        "apt-add-repository ppa:ansible/ansible -y",
+        "apt-get update",
+        "apt-get install -y ansible",
+        "mkdir {{user `packer_provisioner_ansible_local_folder`}}"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "./",
+      "destination": "{{user `packer_provisioner_ansible_local_folder`}}"
+    },
+    {
+      "type": "file",
+      "source": "/usr/local/etc/ansible/roles",
+      "destination": "{{user `packer_provisioner_ansible_local_folder`}}"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "role.yml",
+      "extra_arguments": [
+        "--extra-vars",
+        "'{\"user\": {\"name\": \"deploy\",\"password\": \"$6$rounds=100000$DyBul1962v1jYEMp$gusMKnoORGlF.1d4nQsijXcH9JwGsi3e9m4F7qrR3Azj.v0fXpyJVrKeIP0cqg3rNe1vfRn0OYSkMCVwQ0s//.\",\"group\": \"sudo\",\"ssh_key\": \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsNR7Iwc36JVXtNxh+CvG5oW4cFEe4PbmRJ/2XJWBxcjKZ43a9zJ2RzGGo/Uo4gk+Jr+qGPRWCjwIdVx4C+v/u7gLqsCRT/uNxmq63+AoFeKJo+YvHJ3sLxB/SkxgTgsDhEU7i9Y14CnAIzRq1GBFaJzWV+dj6tif4pDbhrsnzPYXUd/dKp7sAH/2WX50zH4qigvEl8PnqJxCc0nnnIhOqgY+T5craZRaLYAQGxVlapVCKT1YX94bL+aaWLvGTyW4JCp/jc3nN8ckY4w3Cu34mA/xP4+6N7+pKgPonzUq798ghxilDNX+s2xnUWIaJWwVNKBIqzLrhf31nPYnjGfpf leonel@smashingboxes.com\"}}'"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "packing_tape-{{.Provider}}.box"
+    }
+  ]
+}

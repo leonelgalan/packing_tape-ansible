@@ -1,0 +1,46 @@
+---
+
+- hosts: all
+
+  sudo: yes
+
+  vars_files:
+    - defaults/main.yml
+
+  roles:
+    - role: lxhunter.apt
+
+    - role: mivok0.users
+      users:
+        - username: "{{ user.name }}"
+          password: "{{ user.password }}"
+          name: Mr. Deployer
+          groups:
+            - "{{ user.group }}"
+          uid: 1010
+          ssh_key:
+            - "{{ user.ssh_key }}"
+
+    - role: zzet.rbenv
+      rbenv:
+        env: system
+        version: v0.4.0
+        ruby_version: "{{ ruby.version }}"
+      rbenv_users:
+        - "{{ user.name }}"
+
+    - role: ANXS.postgresql
+      postgresql_version: "{{ postgresql.version }}"
+      postgresql_encoding: UTF-8
+      postgresql_locale: en_US.UTF-8
+
+      postgresql_admin_user: postgres
+      postgresql_default_auth_method: trust
+
+      postgresql_cluster_name: main
+      postgresql_cluster_reset: false
+    - role: laggyluke.nodejs
+    - role: crushlovely.imagemagick
+
+  tasks:
+    - include: 'tasks/main.yml'

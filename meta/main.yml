@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: Leonel Galán
+  description: packing_tape
+  company: Smashing Boxes
+  license: MIT
+  min_ansible_version: 1.7.1
+  version: 0.1.0
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty # 14.04
+  categories:
+    - development
+
+dependencies:
+  - role: lxhunter.apt
+  - role: mivok0.users
+  - role: zzet.rbenv
+  - role: ANXS.postgresql
+  - role: laggyluke.nodejs
+  - role: crushlovely.imagemagick

@@ -1,0 +1,4 @@
+# Vagrant
+/.vagrant
+package.box
+packing_tape-vagrant-ansible.box

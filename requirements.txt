@@ -1,0 +1,6 @@
+lxhunter.apt
+mivok0.users
+zzet.rbenv
+ANXS.postgresql
+laggyluke.nodejs
+crushlovely.imagemagick
